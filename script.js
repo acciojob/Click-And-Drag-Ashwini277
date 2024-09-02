@@ -1,30 +1,12 @@
-const container = document.getElementById('dragContainer');
-let isDown = false;
-let startX;
-let scrollLeft;
+it('drag & drop works correctly', () => {
+    cy.get('.items')
+        .should('exist') // Ensure the element exists before proceeding
+        .trigger('mousedown', { which: 1, pageX: 493, pageY: 391 })
+        .trigger('mousemove', { pageX: 271, pageY: 391 })
+        .trigger('mouseup', { force: true });
 
-container.addEventListener('mousedown', (e) => {
-    isDown = true;
-    container.classList.add('active');
-    startX = e.pageX - container.offsetLeft;
-    scrollLeft = container.scrollLeft;
+    cy.get('.items')
+        .should($items => {
+            expect($items[0].scrollLeft).to.be.greaterThan(0);
+        });
 });
-
-container.addEventListener('mouseleave', () => {
-    isDown = false;
-    container.classList.remove('active');
-});
-
-container.addEventListener('mouseup', () => {
-    isDown = false;
-    container.classList.remove('active');
-});
-
-container.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - container.offsetLeft;
-    const walk = (x - startX) * 2; // Multiply by 2 for faster scrolling
-    container.scrollLeft = scrollLeft - walk;
-});
-
